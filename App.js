@@ -1,32 +1,62 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { Ionicons } from '@expo/vector-icons';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-export default function App() {
+import FavoriteScreen from './FavoriteScreen';
+import MapScreen from './MapScreen';
+import ImageScreen from './ImageScreen';
+import ListScreen from './ListScreen';
+
+const MapStack = createNativeStackNavigator();
+
+function MapStackScreen() {
   return (
-    <MapView
-      style={{ flex: 1 }}
-      initialRegion={{
-        latitude: 60.200692,
-        longitude: 24.934302,
-        latitudeDelta: 0.0322,
-        longitudeDelta: 0.0221,
-      }}>
-      <Marker
-        coordinate={{
-          latitude: 60.201373,
-          longitude: 24.934041
-        }} title='Haaga-Helia' />
-    </MapView>
+    <MapStack.Navigator>
+      <MapStack.Screen name="MapStack" component={MapScreen} options={{headerShown: false}}/>
+      <MapStack.Screen name="Image" component={ImageScreen} />
+      <MapStack.Screen name="List" component={ListScreen} />
+    </MapStack.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const FavoriteStack = createNativeStackNavigator();
+
+function FavoriteStackScreen() {
+  return (
+    <FavoriteStack.Navigator>
+      <FavoriteStack.Screen name="Your favorites" component={FavoriteScreen} />
+      <FavoriteStack.Screen name="Image" component={ImageScreen} />
+    </FavoriteStack.Navigator>
+  );
+}
+
+const Tab = createBottomTabNavigator();
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'Map') {
+              iconName = 'map';
+            } else if (route.name === 'Favorites') {
+              iconName = 'heart';
+            }
+
+            return <Ionicons name={iconName} size={size} color={color} />
+          },
+          tabBarActiveTintColor: 'black',
+          headerShown: false
+        })}>
+        <Tab.Screen name="Map" component={MapStackScreen} />
+        <Tab.Screen name="Favorites" component={FavoriteStackScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+
+}
